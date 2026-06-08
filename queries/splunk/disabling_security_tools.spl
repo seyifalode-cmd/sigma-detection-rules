@@ -1,0 +1,5 @@
+index=windows sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational EventCode=1
+| where (Image LIKE "%powershell.exe" AND (match(CommandLine,"(?i)Set-MpPreference\s+-Disable(RealtimeMonitoring|BehaviorMonitoring)\s+\$true") OR match(CommandLine,"(?i)Add-MpPreference\s+-ExclusionPath")))
+  OR ((Image LIKE "%sc.exe" OR Image LIKE "%net.exe") AND match(CommandLine,"(?i)(WinDefend|MsMpEng|SepMasterService|MBAMService)"))
+| table _time, User, Image, CommandLine, Computer
+| sort -_time

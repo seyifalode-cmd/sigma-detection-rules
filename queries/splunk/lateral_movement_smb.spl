@@ -1,0 +1,6 @@
+index=windows sourcetype=WinEventLog:Security (EventCode=4624 LogonType=3) OR (EventCode=5140 (ShareName="ADMIN$" OR ShareName="C$" OR ShareName="IPC$"))
+| bucket _time span=5m
+| stats dc(Computer) AS UniqueHosts, values(ShareName) AS SharesAccessed by SubjectUserName, _time
+| where UniqueHosts > 2
+| sort -UniqueHosts
+| table _time, SubjectUserName, UniqueHosts, SharesAccessed

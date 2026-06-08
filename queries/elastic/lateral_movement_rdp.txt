@@ -1,0 +1,8 @@
+event.code: "4624" and winlog.event_data.LogonType: "10" and winlog.channel: "Security" and NOT source.ip: "127.0.0.1"
+# Threshold rule: group by winlog.event_data.SubjectUserName
+# Alert when dcount(host.name) > 3 within a 30 minute window
+# Elastic SIEM Threshold Rule configuration:
+#   Field: winlog.event_data.SubjectUserName
+#   Threshold field: host.name (unique count)
+#   Threshold value: 3
+#   Time window: 30m

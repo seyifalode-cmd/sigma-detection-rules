@@ -1,0 +1,7 @@
+SecurityEvent
+| where (EventID == 4624 and LogonType == 3)
+    or (EventID == 5140 and ShareName in ("ADMIN$", "C$", "IPC$"))
+| summarize UniqueHosts = dcount(Computer), SharesAccessed = make_set(ShareName)
+            by SubjectUserName, bin(TimeGenerated, 5m)
+| where UniqueHosts > 2
+| order by UniqueHosts desc

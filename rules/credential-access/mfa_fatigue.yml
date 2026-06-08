@@ -1,0 +1,29 @@
+title: MFA Fatigue Push Bombing
+id: d4e5f6a7-0004-4d4d-9f04-dd4444444444
+status: experimental
+description: >
+  Detects MFA push-bombing (fatigue) attacks where a threat actor triggers
+  a large number of MFA push notifications to a single user account in a short
+  timeframe, attempting to exhaust the user into approving a fraudulent request.
+  Tuned to fire when more than 10 MFA push attempts are observed for one user
+  within 10 minutes.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1621/
+tags:
+    - attack.credential_access
+    - attack.t1621
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection:
+        ResultType: 50074
+        AuthenticationDetails.authenticationMethod: 'Phone app notification'
+    timeframe: 10m
+    condition: selection | count() by UserPrincipalName > 10
+falsepositives:
+    - Users repeatedly approving/denying their own push due to phone issues
+    - Automated test accounts used in MFA integration testing
+level: high

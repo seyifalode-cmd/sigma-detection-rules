@@ -1,0 +1,8 @@
+index=network sourcetype=firewall direction=outbound
+| where NOT match(dest_ip,"^(10\.|192\.168\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.)")
+| bucket _time span=60m
+| stats sum(bytes_out) AS TotalBytesOut by src_ip, dest_ip, _time
+| where TotalBytesOut > 524288000
+| eval TotalMB=round(TotalBytesOut/1048576,2)
+| sort -TotalBytesOut
+| table _time, src_ip, dest_ip, TotalMB

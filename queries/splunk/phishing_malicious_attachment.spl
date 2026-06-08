@@ -1,0 +1,5 @@
+index=o365 sourcetype=o365:management:activity eventSource=EmailEvents DeliveryAction=Delivered
+| eval is_malicious_ext=if(match(FileType,"(?i)\.(iso|img|lnk|docm|xlsm|js|hta|vbs)$"),1,0)
+| where ThreatTypes="Malware" AND is_malicious_ext=1
+| table _time, SenderFromAddress, RecipientEmailAddress, Subject, FileType, FileName, ThreatTypes
+| sort -_time

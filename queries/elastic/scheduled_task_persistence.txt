@@ -1,0 +1,2 @@
+event.code: "4698" and winlog.channel: "Security" and winlog.event_data.TaskContent: (*powershell* or *cmd.exe* or *wscript* or *cscript* or *mshta* or *rundll32* or *AppData\\Local\\Temp* or *AppData\\Roaming* or *C:\\Windows\\Temp* or *C:\\Users\\Public*)
+# Match rule: fire on each suspicious scheduled task creation

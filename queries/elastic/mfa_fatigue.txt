@@ -1,0 +1,7 @@
+event.dataset: "azure.signinlogs" and azure.signinlogs.properties.status.errorCode: 50074 and azure.signinlogs.properties.authenticationDetails.authenticationMethod: "Phone app notification"
+# Threshold rule: group by azure.signinlogs.properties.userPrincipalName
+# Alert when count() > 10 within a 10 minute window
+# Elastic SIEM Threshold Rule configuration:
+#   Field: azure.signinlogs.properties.userPrincipalName
+#   Threshold value: 10
+#   Time window: 10m

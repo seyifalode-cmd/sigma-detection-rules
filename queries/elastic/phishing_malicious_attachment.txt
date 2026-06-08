@@ -1,0 +1,3 @@
+event.dataset: "o365.audit" and event.action: "EmailEvents" and o365.audit.DeliveryAction: "Delivered" and threat.indicator.type: "malware" and file.extension: ("iso" or "img" or "lnk" or "docm" or "xlsm" or "js" or "hta" or "vbs")
+# Match rule: fire on each matching event
+# No threshold required — each delivery of a malicious attachment is an alert

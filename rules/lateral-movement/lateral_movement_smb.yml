@@ -1,0 +1,35 @@
+title: Lateral Movement via SMB Admin Shares
+id: b8c9d0e1-0008-4b8b-9f08-bb8888888888
+status: experimental
+description: >
+  Detects lateral movement through administrative SMB shares (ADMIN$, C$, IPC$)
+  by monitoring for network logon events (EventID 4624, LogonType 3) combined
+  with file share access events (EventID 5140) to administrative shares.
+  Threat actors use admin shares post-compromise to deploy tools or access files.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1021/002/
+tags:
+    - attack.lateral_movement
+    - attack.t1021.002
+logsource:
+    product: windows
+    service: security
+detection:
+    selection_logon:
+        EventID: 4624
+        LogonType: 3
+    selection_share:
+        EventID: 5140
+        ShareName|contains:
+            - 'ADMIN$'
+            - 'C$'
+            - 'IPC$'
+    timeframe: 5m
+    condition: selection_logon and selection_share | count(Computer) by SubjectUserName > 2
+falsepositives:
+    - IT backup agents accessing admin shares for scheduled backups
+    - Domain-joined software deployment via Group Policy or SCCM
+    - Legitimate sysadmin activity accessing multiple servers
+level: medium

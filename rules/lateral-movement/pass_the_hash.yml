@@ -1,0 +1,35 @@
+title: Pass-the-Hash Attack
+id: c9d0e1f2-0009-4c9c-9f09-cc9999999999
+status: experimental
+description: >
+  Detects Pass-the-Hash (PtH) attacks by identifying NTLM network logons
+  (EventID 4624, LogonType 3) where the authentication package is NtLmSsp
+  and the source workstation differs from the account's usual host. PtH allows
+  attackers to authenticate using captured NTLM hashes without knowing the
+  plaintext password, enabling lateral movement across Windows environments.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1550/002/
+tags:
+    - attack.lateral_movement
+    - attack.t1550.002
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 3
+        AuthenticationPackageName: 'NTLM'
+        LmPackageName: 'NTLM V2'
+    filter_machine_accounts:
+        SubjectUserName|endswith: '$'
+    filter_anonymous:
+        SubjectUserName: 'ANONYMOUS LOGON'
+    condition: selection and not filter_machine_accounts and not filter_anonymous
+falsepositives:
+    - Legacy applications that only support NTLM authentication
+    - File servers accessed by older Windows clients that fall back to NTLM
+    - Workgroup environments where Kerberos is not configured
+level: high

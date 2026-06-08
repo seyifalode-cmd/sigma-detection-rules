@@ -1,0 +1,6 @@
+index=azure sourcetype=azure:signinlogs ResultType=0
+| where NOT match(IPAddress,"^(10\.|192\.168\.|172\.1[6-9]\.|172\.2[0-9]\.|172\.3[0-1]\.)")
+| eval hour=strftime(_time,"%H")
+| where hour >= 0 AND hour <= 4
+| table _time, UserPrincipalName, IPAddress, Location, AppDisplayName, DeviceDetail.displayName
+| sort -_time

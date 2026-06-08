@@ -1,0 +1,7 @@
+SigninLogs
+| where ResultType == 50074
+| mv-expand AuthenticationDetails
+| where AuthenticationDetails.authenticationMethod == "Phone app notification"
+| summarize PushAttempts = count() by UserPrincipalName, bin(TimeGenerated, 10m)
+| where PushAttempts > 10
+| order by PushAttempts desc

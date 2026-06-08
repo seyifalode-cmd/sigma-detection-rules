@@ -1,0 +1,3 @@
+event.dataset: "azure.signinlogs" and azure.signinlogs.properties.status.errorCode: 0 and NOT source.ip: ("10.0.0.0/8" or "192.168.0.0/16" or "172.16.0.0/12")
+# Additional filter: apply time-of-day filter for hours 00:00-04:59 UTC in the detection rule schedule
+# Match rule: fire on each matching event outside business hours from external IPs

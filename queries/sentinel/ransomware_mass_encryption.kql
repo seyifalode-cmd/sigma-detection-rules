@@ -1,0 +1,13 @@
+Event
+| where Source == "Microsoft-Windows-Sysmon"
+| extend CommandLine = extract(@"<Data Name='CommandLine'>([^<]+)<", 1, RenderedDescription)
+| extend TargetFilename = extract(@"<Data Name='TargetFilename'>([^<]+)<", 1, RenderedDescription)
+| extend Image = extract(@"<Data Name='Image'>([^<]+)<", 1, RenderedDescription)
+| where (EventID == 1 and CommandLine has_any ("vssadmin delete shadows", "wmic shadowcopy delete",
+                                               "Get-WmiObject Win32_Shadowcopy",
+                                               "bcdedit /set recoveryenabled No", "wbadmin delete catalog"))
+      or (EventID == 11 and TargetFilename matches regex @"(?i)\.(locked|encrypted|crypt|enc|ryk|wncry|ransom)$")
+| summarize ShadowDeletes = countif(EventID == 1), EncryptedFiles = countif(EventID == 11)
+            by Computer, Image, bin(TimeGenerated, 5m)
+| where ShadowDeletes > 0 or EncryptedFiles > 50
+| order by EncryptedFiles desc

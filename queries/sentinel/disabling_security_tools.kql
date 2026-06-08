@@ -1,0 +1,10 @@
+Event
+| where Source == "Microsoft-Windows-Sysmon" and EventID == 1
+| extend CommandLine = extract(@"<Data Name='CommandLine'>([^<]+)<", 1, RenderedDescription)
+| extend Image = extract(@"<Data Name='Image'>([^<]+)<", 1, RenderedDescription)
+| where (Image endswith "powershell.exe"
+         and (CommandLine has "Set-MpPreference" and CommandLine has_any ("DisableRealtimeMonitoring", "DisableBehaviorMonitoring", "ExclusionPath")))
+      or ((Image endswith "sc.exe" or Image endswith "net.exe")
+          and CommandLine has_any ("WinDefend", "MsMpEng", "SepMasterService", "MBAMService"))
+| project TimeGenerated, Computer, Image, CommandLine
+| order by TimeGenerated desc

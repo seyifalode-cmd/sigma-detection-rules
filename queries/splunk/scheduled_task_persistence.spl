@@ -1,0 +1,4 @@
+index=windows sourcetype=WinEventLog:Security EventCode=4698
+| where match(TaskContent,"(?i)(powershell|cmd\.exe|wscript|cscript|mshta|rundll32)") OR match(TaskContent,"(?i)(AppData\\Local\\Temp|AppData\\Roaming|C:\\Windows\\Temp|C:\\Users\\Public)")
+| table _time, SubjectUserName, Computer, TaskName, TaskContent
+| sort -_time

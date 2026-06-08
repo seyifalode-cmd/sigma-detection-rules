@@ -1,0 +1,8 @@
+(event.code: "4624" and winlog.event_data.LogonType: "3") or (event.code: "5140" and winlog.event_data.ShareName: ("ADMIN$" or "C$" or "IPC$"))
+# Threshold rule: group by winlog.event_data.SubjectUserName
+# Alert when dcount(host.name) > 2 within a 5 minute window
+# Elastic SIEM Threshold Rule configuration:
+#   Field: winlog.event_data.SubjectUserName
+#   Threshold field: host.name (unique count)
+#   Threshold value: 2
+#   Time window: 5m

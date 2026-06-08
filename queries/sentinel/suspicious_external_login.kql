@@ -1,0 +1,8 @@
+SigninLogs
+| where ResultType == 0
+    and IPAddress !startswith "10."
+    and IPAddress !startswith "192.168."
+    and not(IPAddress matches regex @"^172\.(1[6-9]|2[0-9]|3[01])\.")
+    and hourofday(TimeGenerated) between (0 .. 4)
+| project TimeGenerated, UserPrincipalName, IPAddress, Location, AppDisplayName, DeviceDetail
+| order by TimeGenerated desc

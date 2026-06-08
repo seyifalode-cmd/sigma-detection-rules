@@ -1,0 +1,8 @@
+index=windows sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational
+| eval is_shadow_delete=if(EventCode=1 AND match(CommandLine,"(?i)(vssadmin delete shadows|wmic shadowcopy delete|Get-WmiObject Win32_Shadowcopy|bcdedit /set recoveryenabled No|wbadmin delete catalog)"),1,0)
+| eval is_mass_encrypt=if(EventCode=11 AND match(TargetFilename,"(?i)\.(locked|encrypted|crypt|enc|ryk|wncry|ransom)$"),1,0)
+| bucket _time span=5m
+| stats sum(is_shadow_delete) AS ShadowDeletes, count(eval(is_mass_encrypt=1)) AS EncryptedFiles by Computer, Image, _time
+| where ShadowDeletes > 0 OR EncryptedFiles > 50
+| sort -EncryptedFiles
+| table _time, Computer, Image, ShadowDeletes, EncryptedFiles

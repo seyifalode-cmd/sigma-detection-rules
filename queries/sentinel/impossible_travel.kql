@@ -1,0 +1,7 @@
+SigninLogs
+| where ResultType == 0
+| summarize CountryCount = dcount(tostring(LocationDetails.countryOrRegion)),
+            Countries = make_set(tostring(LocationDetails.countryOrRegion))
+            by UserPrincipalName, bin(TimeGenerated, 30m)
+| where CountryCount > 1
+| order by CountryCount desc

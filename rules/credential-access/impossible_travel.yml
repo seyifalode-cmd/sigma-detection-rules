@@ -1,0 +1,30 @@
+title: Impossible Travel Anomalous Sign-In
+id: c3d4e5f6-0003-4c3c-9f03-cc3333333333
+status: experimental
+description: >
+  Detects sign-in events where the same account authenticates from two
+  geographically distant locations within a time window that makes physical
+  travel impossible (e.g., two different countries within 30 minutes).
+  This is a strong indicator of credential compromise or account sharing.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1078/
+tags:
+    - attack.credential_access
+    - attack.t1078
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection:
+        ResultType: 0
+    filter_same_country:
+        LocationDetails.countryOrRegion|contains: '*'
+    timeframe: 30m
+    condition: selection | count(LocationDetails.countryOrRegion) by UserPrincipalName > 1
+falsepositives:
+    - Use of VPN services or Tor exit nodes that shift apparent geolocation
+    - Shared accounts used legitimately by employees in different countries
+    - Corporate proxy servers masking true user location
+level: high

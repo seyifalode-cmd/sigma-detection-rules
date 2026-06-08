@@ -1,0 +1,6 @@
+index=azure sourcetype=azure:signinlogs ResultType=50074 AuthenticationDetails.authenticationMethod="Phone app notification"
+| bucket _time span=10m
+| stats count AS PushAttempts by UserPrincipalName, _time
+| where PushAttempts > 10
+| sort -PushAttempts
+| table _time, UserPrincipalName, PushAttempts

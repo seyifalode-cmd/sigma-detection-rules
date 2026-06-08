@@ -1,0 +1,33 @@
+title: Large Outbound Data Transfer
+id: e1f2a3b4-0011-4e1e-9f11-ee1111111111
+status: experimental
+description: >
+  Detects unusually large outbound data transfers from internal endpoints to
+  external destinations, which may indicate data exfiltration over alternative
+  protocols (FTP, SFTP, HTTP/S, or cloud storage). Fires when a single source
+  transfers more than 500 MB to an external destination within one hour.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1048/
+tags:
+    - attack.exfiltration
+    - attack.t1048
+logsource:
+    category: network_flow
+    product: firewall
+detection:
+    selection:
+        direction: outbound
+    filter_internal_dst:
+        dst_ip|startswith:
+            - '10.'
+            - '192.168.'
+            - '172.16.'
+    timeframe: 60m
+    condition: (selection and not filter_internal_dst) | sum(bytes_out) by src_ip > 524288000
+falsepositives:
+    - Legitimate cloud backup jobs (e.g., Azure Backup, AWS S3 sync, Veeam)
+    - Software update distribution servers pushing large patches
+    - Media or video conferencing uploads generating high egress traffic
+level: high

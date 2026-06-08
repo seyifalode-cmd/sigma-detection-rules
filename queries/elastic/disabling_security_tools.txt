@@ -1,0 +1,2 @@
+(event.code: "1" and winlog.channel: "Microsoft-Windows-Sysmon/Operational" and process.name: "powershell.exe" and process.command_line: (*Set-MpPreference* and (*DisableRealtimeMonitoring* or *DisableBehaviorMonitoring* or *ExclusionPath*))) or (event.code: "1" and winlog.channel: "Microsoft-Windows-Sysmon/Operational" and process.name: ("sc.exe" or "net.exe") and process.command_line: (*WinDefend* or *MsMpEng* or *SepMasterService* or *MBAMService*))
+# Match rule: fire on each security tool disable/tamper attempt

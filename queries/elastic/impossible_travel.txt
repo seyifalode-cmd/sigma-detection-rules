@@ -1,0 +1,8 @@
+event.dataset: "azure.signinlogs" and azure.signinlogs.properties.status.errorCode: 0
+# Threshold rule: group by azure.signinlogs.properties.userPrincipalName
+# Alert when dcount(geo.country_name) > 1 within a 30 minute window
+# Elastic SIEM Threshold Rule configuration:
+#   Field: azure.signinlogs.properties.userPrincipalName
+#   Threshold field: geo.country_name (unique count)
+#   Threshold value: 1
+#   Time window: 30m

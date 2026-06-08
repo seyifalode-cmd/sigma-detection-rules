@@ -1,0 +1,40 @@
+title: Suspicious External Login to Valid Account
+id: f6a7b8c9-0006-4f6f-9f06-ff6666666666
+status: experimental
+description: >
+  Detects successful logins to valid accounts originating from external or
+  uncommon IP addresses outside the organization's expected geo-range, combined
+  with atypical login hours. This pattern is consistent with compromised valid
+  account access (T1078) used as initial access by threat actors.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1078/
+tags:
+    - attack.initial_access
+    - attack.t1078
+logsource:
+    product: azure
+    service: signinlogs
+detection:
+    selection:
+        ResultType: 0
+        NetworkLocationDetails: ''
+    filter_internal:
+        IPAddress|startswith:
+            - '10.'
+            - '192.168.'
+            - '172.16.'
+    filter_hours:
+        TimeGenerated|contains:
+            - 'T00:'
+            - 'T01:'
+            - 'T02:'
+            - 'T03:'
+            - 'T04:'
+    condition: selection and not filter_internal and filter_hours
+falsepositives:
+    - Employees working remotely from home or hotels during off-hours
+    - IT administrators performing after-hours maintenance
+    - Service accounts authenticating from cloud provider IPs
+level: medium

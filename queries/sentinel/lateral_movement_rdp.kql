@@ -1,0 +1,6 @@
+SecurityEvent
+| where EventID == 4624 and LogonType == 10 and IpAddress != "127.0.0.1"
+| summarize UniqueHosts = dcount(Computer), TargetHosts = make_set(Computer)
+            by SubjectUserName, bin(TimeGenerated, 30m)
+| where UniqueHosts > 3
+| order by UniqueHosts desc

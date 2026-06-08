@@ -1,0 +1,2 @@
+event.code: "4624" and winlog.event_data.LogonType: "3" and winlog.event_data.AuthenticationPackageName: "NTLM" and winlog.event_data.LmPackageName: "NTLM V2" and NOT winlog.event_data.SubjectUserName: (*$ or "ANONYMOUS LOGON")
+# Match rule: fire on each matching NTLM v2 network logon excluding machine accounts and anonymous

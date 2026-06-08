@@ -1,0 +1,8 @@
+network.direction: "outbound" and NOT destination.ip: ("10.0.0.0/8" or "192.168.0.0/16" or "172.16.0.0/12")
+# Threshold rule: group by source.ip
+# Alert when sum(network.bytes) > 524288000 (500 MB) within a 60 minute window
+# Elastic SIEM Threshold Rule configuration:
+#   Field: source.ip
+#   Threshold field: network.bytes (sum)
+#   Threshold value: 524288000
+#   Time window: 60m

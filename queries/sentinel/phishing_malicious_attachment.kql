@@ -1,0 +1,7 @@
+EmailEvents
+| where DeliveryAction == "Delivered"
+    and ThreatTypes has "Malware"
+| join kind=inner EmailAttachmentInfo on NetworkMessageId
+| where FileType has_any ("iso", "img", "lnk", "docm", "xlsm", "js", "hta", "vbs")
+| project TimeGenerated, SenderFromAddress, RecipientEmailAddress, Subject, FileName, FileType, ThreatTypes
+| order by TimeGenerated desc

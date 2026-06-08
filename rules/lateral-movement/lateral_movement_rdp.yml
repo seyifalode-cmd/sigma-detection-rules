@@ -1,0 +1,31 @@
+title: Lateral Movement via RDP
+id: a7b8c9d0-0007-4a7a-9f07-aa7777777777
+status: experimental
+description: >
+  Detects lateral movement via Remote Desktop Protocol (RDP) by identifying
+  successful RDP logon events (EventID 4624, LogonType 10) where a user
+  account authenticates to multiple internal hosts within a short period.
+  Attackers use RDP to pivot across the network after obtaining credentials.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1021/001/
+tags:
+    - attack.lateral_movement
+    - attack.t1021.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        LogonType: 10
+    filter_local:
+        IpAddress: '127.0.0.1'
+    timeframe: 30m
+    condition: (selection and not filter_local) | count(Computer) by SubjectUserName > 3
+falsepositives:
+    - System administrators legitimately using RDP for server management
+    - Helpdesk staff remotely supporting multiple endpoints
+    - Automated remote management tools (e.g., SCCM, Ansible over WinRM via RDP)
+level: medium

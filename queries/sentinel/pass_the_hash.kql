@@ -1,0 +1,9 @@
+SecurityEvent
+| where EventID == 4624
+    and LogonType == 3
+    and AuthenticationPackageName == "NTLM"
+    and LmPackageName == "NTLM V2"
+    and SubjectUserName !endswith "$"
+    and SubjectUserName != "ANONYMOUS LOGON"
+| project TimeGenerated, SubjectUserName, Computer, IpAddress, IpPort, WorkstationName
+| order by TimeGenerated desc

@@ -1,0 +1,41 @@
+title: Ransomware Mass File Encryption and Shadow Copy Deletion
+id: c5d6e7f8-0015-4c5c-9f15-cc5555555555
+status: experimental
+description: >
+  Detects ransomware activity through two key indicators: (1) mass file
+  rename/modification events across multiple directories at high rate
+  (Sysmon EventID 11 for FileCreate with suspicious extension patterns),
+  and (2) deletion of Volume Shadow Copies via vssadmin, wmic, or PowerShell
+  (Sysmon EventID 1). Either indicator alone is suspicious; both together is
+  a near-certain ransomware execution event.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1486/
+    - https://attack.mitre.org/techniques/T1490/
+tags:
+    - attack.impact
+    - attack.t1486
+    - attack.t1490
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection_shadow_delete:
+        EventID: 1
+        CommandLine|contains:
+            - 'vssadmin delete shadows'
+            - 'wmic shadowcopy delete'
+            - 'Get-WmiObject Win32_Shadowcopy'
+            - 'bcdedit /set recoveryenabled No'
+            - 'wbadmin delete catalog'
+    selection_mass_encrypt:
+        EventID: 11
+        TargetFilename|re: '.*\.(locked|encrypted|crypt|enc|ryk|wncry|ransom)$'
+    timeframe: 5m
+    condition: selection_shadow_delete or (selection_mass_encrypt | count() by Image > 50)
+falsepositives:
+    - Legitimate disk encryption tools (BitLocker provisioning) modifying file metadata
+    - Backup software deleting old shadow copies as part of retention policy
+    - Developers testing file encryption libraries in sandboxed environments
+level: critical

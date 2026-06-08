@@ -1,0 +1,7 @@
+index=dns sourcetype=dns
+| eval subdomain_len=len(replace(QueryName,"[^.]*\.[^.]+$",""))
+| bucket _time span=5m
+| stats count AS QueryCount, max(subdomain_len) AS MaxSubdomainLen by src_ip, _time
+| where QueryCount > 500 OR MaxSubdomainLen > 50
+| sort -QueryCount
+| table _time, src_ip, QueryCount, MaxSubdomainLen

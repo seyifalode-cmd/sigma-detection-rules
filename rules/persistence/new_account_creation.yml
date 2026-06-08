@@ -1,0 +1,35 @@
+title: New Local User Account Created for Persistence
+id: f2a3b4c5-0012-4f2f-9f12-ff2222222222
+status: experimental
+description: >
+  Detects the creation of a new local user account (EventID 4720) outside of
+  normal business hours or by a non-privileged account, which may indicate an
+  attacker establishing a persistent backdoor account on a compromised host.
+  Particularly suspicious when followed by group membership changes (EventID 4732).
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1136/001/
+tags:
+    - attack.persistence
+    - attack.t1136.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4720
+    filter_expected_admins:
+        SubjectUserName|startswith:
+            - 'svc_'
+            - 'adm_'
+    filter_domain_controllers:
+        Computer|endswith:
+            - 'DC01'
+            - 'DC02'
+    condition: selection and not filter_expected_admins and not filter_domain_controllers
+falsepositives:
+    - IT helpdesk creating new accounts during employee onboarding
+    - Automated provisioning scripts creating service accounts
+    - HR or identity governance tools performing lifecycle management
+level: medium

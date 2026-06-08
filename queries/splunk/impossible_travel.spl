@@ -1,0 +1,7 @@
+index=azure sourcetype=azure:signinlogs ResultType=0
+| eval login_time=_time
+| bucket _time span=30m
+| stats dc(LocationDetails.countryOrRegion) AS CountryCount, values(LocationDetails.countryOrRegion) AS Countries by UserPrincipalName, _time
+| where CountryCount > 1
+| sort -CountryCount
+| table _time, UserPrincipalName, CountryCount, Countries

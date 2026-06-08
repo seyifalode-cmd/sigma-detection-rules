@@ -1,0 +1,40 @@
+title: Phishing Email with Malicious Attachment
+id: e5f6a7b8-0005-4e5e-9f05-ee5555555555
+status: experimental
+description: >
+  Detects inbound phishing emails containing potentially malicious attachment
+  types commonly abused in spear-phishing campaigns (e.g., .iso, .img, .lnk,
+  .docm, .xlsm, .js, .hta). The rule fires when such attachments are received
+  from external senders and the email passes spam filters but contains
+  high-risk file extensions.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1566/001/
+tags:
+    - attack.initial_access
+    - attack.t1566.001
+logsource:
+    product: microsoft365
+    service: threatintelligence
+detection:
+    selection:
+        eventSource: EmailEvents
+        DeliveryAction: Delivered
+        ThreatTypes|contains: 'Malware'
+    attachment_filter:
+        FileType|endswith:
+            - '.iso'
+            - '.img'
+            - '.lnk'
+            - '.docm'
+            - '.xlsm'
+            - '.js'
+            - '.hta'
+            - '.vbs'
+    condition: selection and attachment_filter
+falsepositives:
+    - Legitimate software distribution via email using ISO or IMG files
+    - Internal security team sending test phishing payloads
+    - Developer tools distributed via macro-enabled Office documents
+level: high

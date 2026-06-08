@@ -1,0 +1,2 @@
+event.code: "4720" and winlog.channel: "Security" and NOT winlog.event_data.SubjectUserName: ("svc_*" or "adm_*") and NOT host.name: (*DC01 or *DC02)
+# Match rule: fire on each new local account creation not performed by known admin service accounts

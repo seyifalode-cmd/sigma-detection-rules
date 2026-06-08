@@ -1,0 +1,42 @@
+title: Disabling Windows Defender or Security Tools
+id: b4c5d6e7-0014-4b4b-9f14-bb4444444444
+status: experimental
+description: >
+  Detects attempts to disable Windows Defender or other security tools via
+  PowerShell Set-MpPreference commands, registry modifications to disable
+  AV/EDR, or via sc.exe/net.exe to stop security services. Attackers disable
+  security tools to avoid detection before executing malicious payloads.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1562/001/
+tags:
+    - attack.defense_evasion
+    - attack.t1562.001
+logsource:
+    product: windows
+    service: sysmon
+detection:
+    selection_powershell:
+        EventID: 1
+        Image|endswith: '\powershell.exe'
+        CommandLine|contains:
+            - 'Set-MpPreference -DisableRealtimeMonitoring $true'
+            - 'Set-MpPreference -DisableBehaviorMonitoring $true'
+            - 'Add-MpPreference -ExclusionPath'
+    selection_service:
+        EventID: 1
+        Image|endswith:
+            - '\sc.exe'
+            - '\net.exe'
+        CommandLine|contains:
+            - 'WinDefend'
+            - 'MsMpEng'
+            - 'SepMasterService'
+            - 'MBAMService'
+    condition: selection_powershell or selection_service
+falsepositives:
+    - Security team members temporarily disabling Defender for testing purposes
+    - Legitimate AV migration scripts uninstalling old products before installing new ones
+    - Software vendors that require Defender exclusions during installation
+level: high

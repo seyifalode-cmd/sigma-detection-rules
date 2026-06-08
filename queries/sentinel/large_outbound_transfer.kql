@@ -1,0 +1,8 @@
+AzureNetworkAnalytics_CL
+| where FlowDirection_s == "O"
+    and DestPublicIPs_s != ""
+| summarize TotalBytesOut = sum(OutboundBytes_d) by SrcIP_s, DestPublicIPs_s, bin(TimeGenerated, 60m)
+| where TotalBytesOut > 524288000
+| extend TotalMB = round(TotalBytesOut / 1048576, 2)
+| order by TotalBytesOut desc
+| project TimeGenerated, SrcIP_s, DestPublicIPs_s, TotalMB

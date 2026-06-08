@@ -1,0 +1,41 @@
+title: Suspicious Scheduled Task Created for Persistence
+id: a3b4c5d6-0013-4a3a-9f13-aa3333333333
+status: experimental
+description: >
+  Detects the creation of a new scheduled task (EventID 4698) that executes
+  commands or scripts from suspicious paths such as temp directories, user
+  AppData, or PowerShell/cmd invocations. Adversaries commonly use scheduled
+  tasks to maintain persistence across reboots on Windows systems.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1053/005/
+tags:
+    - attack.persistence
+    - attack.t1053.005
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4698
+    suspicious_command:
+        TaskContent|contains:
+            - 'powershell'
+            - 'cmd.exe'
+            - 'wscript'
+            - 'cscript'
+            - 'mshta'
+            - 'rundll32'
+    suspicious_path:
+        TaskContent|contains:
+            - '\AppData\Local\Temp'
+            - '\AppData\Roaming'
+            - 'C:\Windows\Temp'
+            - 'C:\Users\Public'
+    condition: selection and (suspicious_command or suspicious_path)
+falsepositives:
+    - Legitimate software installers that use scheduled tasks during setup
+    - Security products scheduling PowerShell-based health checks
+    - IT automation frameworks (e.g., Ansible, Chef) managing scheduled tasks
+level: high

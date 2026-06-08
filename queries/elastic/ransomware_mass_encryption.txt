@@ -1,0 +1,4 @@
+(event.code: "1" and winlog.channel: "Microsoft-Windows-Sysmon/Operational" and process.command_line: (*vssadmin\ delete\ shadows* or *wmic\ shadowcopy\ delete* or *Win32_Shadowcopy* or *bcdedit\ /set\ recoveryenabled\ No* or *wbadmin\ delete\ catalog*)) or (event.code: "11" and winlog.channel: "Microsoft-Windows-Sysmon/Operational" and file.name: (*.locked or *.encrypted or *.crypt or *.enc or *.ryk or *.wncry or *.ransom))
+# Threshold rule for mass encryption (EventID 11): group by host.name and process.name
+# Alert when count() > 50 within a 5 minute window
+# Shadow copy deletion (EventID 1): match rule, fire immediately

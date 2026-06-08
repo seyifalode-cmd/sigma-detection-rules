@@ -1,0 +1,30 @@
+title: DNS Tunneling and Data Exfiltration via DNS
+id: d0e1f2a3-0010-4d0d-9f10-dd0000000000
+status: experimental
+description: >
+  Detects DNS-based data exfiltration and tunneling by identifying endpoints
+  that generate an unusually high number of DNS queries to a single external
+  domain, or queries containing abnormally long subdomains (>50 characters)
+  consistent with base64-encoded data being smuggled in DNS query names.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1071/004/
+tags:
+    - attack.exfiltration
+    - attack.t1071.004
+logsource:
+    category: dns
+    product: dns
+detection:
+    selection_high_volume:
+        QueryType: 'A'
+    selection_long_subdomain:
+        QueryName|re: '^[a-zA-Z0-9+/=]{50,}\.'
+    timeframe: 5m
+    condition: (selection_high_volume | count(QueryName) by src_ip > 500) or selection_long_subdomain
+falsepositives:
+    - CDN services that use long randomized hostnames for content delivery
+    - Security products that use DNS for telemetry (e.g., CrowdStrike, Carbon Black)
+    - DNS-based load balancing solutions generating high query rates
+level: medium

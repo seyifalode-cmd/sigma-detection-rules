@@ -1,0 +1,7 @@
+index=windows sourcetype=WinEventLog:Security EventCode=4624 LogonType=10
+| where IpAddress != "127.0.0.1"
+| bucket _time span=30m
+| stats dc(Computer) AS UniqueHosts, values(Computer) AS TargetHosts by SubjectUserName, _time
+| where UniqueHosts > 3
+| sort -UniqueHosts
+| table _time, SubjectUserName, UniqueHosts, TargetHosts

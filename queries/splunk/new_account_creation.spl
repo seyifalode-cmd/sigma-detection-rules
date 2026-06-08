@@ -1,0 +1,4 @@
+index=windows sourcetype=WinEventLog:Security EventCode=4720
+| where NOT match(SubjectUserName,"^(svc_|adm_)") AND NOT match(Computer,"(DC01|DC02)$")
+| table _time, SubjectUserName, TargetUserName, Computer
+| sort -_time

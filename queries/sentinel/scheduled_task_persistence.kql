@@ -1,0 +1,8 @@
+SecurityEvent
+| where EventID == 4698
+| where EventData has_any ("powershell", "cmd.exe", "wscript", "cscript", "mshta", "rundll32",
+                           "AppData\\Local\\Temp", "AppData\\Roaming", "C:\\Windows\\Temp", "C:\\Users\\Public")
+| project TimeGenerated, SubjectUserName, Computer,
+          TaskName = extract(@"<TaskName>([^<]+)<", 1, EventData),
+          CommandLine = extract(@"<Command>([^<]+)<", 1, EventData)
+| order by TimeGenerated desc

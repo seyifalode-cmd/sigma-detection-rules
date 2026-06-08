@@ -1,0 +1,12 @@
+event.dataset: "dns" and dns.question.type: "A"
+# Threshold rule (high query volume): group by source.ip
+# Alert when count() > 500 within a 5 minute window
+#
+# EQL query for long subdomain detection:
+# sequence by source.ip
+#   [dns where length(dns.question.name) > 50]
+#
+# Elastic SIEM Threshold Rule configuration:
+#   Field: source.ip
+#   Threshold value: 500
+#   Time window: 5m

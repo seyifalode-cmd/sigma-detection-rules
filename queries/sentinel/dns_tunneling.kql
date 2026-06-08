@@ -1,0 +1,7 @@
+DnsEvents
+| where QueryType == "A"
+| extend SubdomainLength = strlen(extract(@"^([^.]+)\.", 1, Name))
+| summarize QueryCount = count(), MaxSubdomainLen = max(SubdomainLength)
+            by ClientIP, bin(TimeGenerated, 5m)
+| where QueryCount > 500 or MaxSubdomainLen > 50
+| order by QueryCount desc

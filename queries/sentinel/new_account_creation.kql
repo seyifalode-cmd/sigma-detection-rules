@@ -1,0 +1,8 @@
+SecurityEvent
+| where EventID == 4720
+    and SubjectUserName !startswith "svc_"
+    and SubjectUserName !startswith "adm_"
+    and Computer !endswith "DC01"
+    and Computer !endswith "DC02"
+| project TimeGenerated, SubjectUserName, TargetUserName, Computer
+| order by TimeGenerated desc
