@@ -1,0 +1,24 @@
+title: Brute Force Authentication Attempt
+id: a1b2c3d4-0001-4a1a-9f01-aa1111111111
+status: experimental
+description: Detects a high number of failed login attempts against a single account, indicating a possible brute force or password guessing attack.
+author: Oluwaseyi Michael Falode
+date: 2026/06/05
+references:
+    - https://attack.mitre.org/techniques/T1110/
+tags:
+    - attack.credential-access
+    - attack.t1110
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4625
+    timeframe: 5m
+    condition: selection | count() by TargetUserName > 10
+falsepositives:
+    - Users forgetting their password
+    - Service accounts with expired credentials
+    - Misconfigured applications retrying logins
+level: medium
