@@ -1,0 +1,5 @@
+index=windows sourcetype=WinEventLog:Security EventCode=4625
+| bucket _time span=5m
+| stats count by TargetUserName, _time
+| where count > 10
+| sort -count
