@@ -1,0 +1,3 @@
+event.code: "4625" and winlog.channel: "Security"
+# Threshold rule: group by winlog.event_data.TargetUserName
+# Alert when count > 10 within a 5 minute window
